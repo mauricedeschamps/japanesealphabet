@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Japanese Letters">
+    <title>Japanese Letters Learner</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Favicons -->
+    <link rel="icon" href="icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#de0101">
+    
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --button-bg: #333333;
+            --button-hover: #555555;
+            --button-text: #ffffff;
+            --header-bg: #1a1a1a;
+            --footer-bg: #1a1a1a;
+            --accent-color: #de0101;
+        }
+
+        .clear-mode {
+            --bg-color: #f5f5f5;
+            --text-color: #000000;
+            --button-bg: #e0e0e0;
+            --button-hover: #cccccc;
+            --button-text: #000000;
+            --header-bg: #eeeeee;
+            --footer-bg: #eeeeee;
+            --accent-color: #de0101;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--header-bg);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .kana-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .kana-toggle button {
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        .kana-rows-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .kana-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .kana-row button {
+            height: 50px;
+            min-width: 70px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kana-detail {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .back-button {
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            align-self: flex-start;
+        }
+
+        .active {
+            background-color: #4CAF50 !important;
+            color: white !important;
+        }
+
+        .example-sentences {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .example-sentences h3 {
+            margin-bottom: 15px;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .example-buttons button {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--text-color);
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+
+        footer p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .clear-mode a {
+            color: #000000;
+        }
+
+        .voice-info {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            color: #888;
+        }
+
+        .clear-mode .voice-info {
+            color: #666;
+        }
+
+        .kana-with-romaji {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+        }
+
+        .romaji {
+            font-size: 0.8rem;
+            margin-top: 3px;
+        }
+
+        .row-with-romaji {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 詳細ページのレイアウト */
+        .detail-container {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .kana-buttons-container {
+            display: flex;
+            flex-direction: column;
+            width: 40%;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .kana-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60%;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .large-kana {
+            font-size: 120px;
+            margin-bottom: 20px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .large-romaji {
+            font-size: 40px;
+            color: #4CAF50;
+        }
+
+        .kana-char {
+            width: 70px;
+            height: 70px;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 600px) {
+            .detail-container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            
+            .kana-buttons-container {
+                width: 45%;
+                margin-left: 0;
+            }
+            
+            .kana-display {
+                width: 55%;
+                position: sticky;
+                top: 20px;
+            }
+            
+            .large-kana {
+                font-size: 60px;
+                min-height: 80px;
+                margin-bottom: 10px;
+            }
+            
+            .large-romaji {
+                font-size: 24px;
+            }
+            
+            .kana-char {
+                width: 60px;
+                height: 60px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Install button styles */
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .install-btn:hover {
+            background-color: #c00000;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <header>
+            <div class="title-container">
+                <div class="app-icon">あ</div>
+                <h1>Japanese Letters Learner</h1>
+            </div>
+            <div class="mode-toggle">
+                <button id="darkModeBtn" class="active">Dark Mode</button>
+                <button id="clearModeBtn">Clear Mode</button>
+            </div>
+        </header>
+
+        <div class="kana-toggle">
+            <button id="hiraganaBtn" class="active">ひらがな</button>
+            <button id="katakanaBtn">カタカナ</button>
+        </div>
+
+        <div id="mainMenu">
+            <div class="kana-rows-container">
+                <div class="kana-row">
+                    <button class="row-btn" data-row="a"><span class="row-with-romaji">あ <span class="romaji">a</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ka"><span class="row-with-romaji">か <span class="romaji">ka</span></span></button>
+                    <button class="row-btn" data-row="ga"><span class="row-with-romaji">が <span class="romaji">ga</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="sa"><span class="row-with-romaji">さ <span class="romaji">sa</span></span></button>
+                    <button class="row-btn" data-row="za"><span class="row-with-romaji">ざ <span class="romaji">za</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ta"><span class="row-with-romaji">た <span class="romaji">ta</span></span></button>
+                    <button class="row-btn" data-row="da"><span class="row-with-romaji">だ <span class="romaji">da</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="na"><span class="row-with-romaji">な <span class="romaji">na</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ha"><span class="row-with-romaji">は <span class="romaji">ha</span></span></button>
+                    <button class="row-btn" data-row="ba"><span class="row-with-romaji">ば <span class="romaji">ba</span></span></button>
+                    <button class="row-btn" data-row="pa"><span class="row-with-romaji">ぱ <span class="romaji">pa</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ma"><span class="row-with-romaji">ま <span class="romaji">ma</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ya"><span class="row-with-romaji">や <span class="romaji">ya</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="ra"><span class="row-with-romaji">ら <span class="romaji">ra</span></span></button>
+                </div>
+                <div class="kana-row">
+                    <button class="row-btn" data-row="wa"><span class="row-with-romaji">わ <span class="romaji">wa</span></span></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="kanaDetail" class="kana-detail">
+            <button class="back-button" id="backBtn">back</button>
+            
+            <div class="detail-container">
+                <div class="kana-display">
+                    <div class="large-kana" id="largeKanaDisplay"></div>
+                    <div class="large-romaji" id="largeRomajiDisplay"></div>
+                </div>
+                
+                <div class="kana-buttons-container" id="detailKanaRow"></div>
+            </div>
+            
+            <div class="example-sentences">
+                <h3>例文 (Example Words)</h3>
+                <div class="example-buttons" id="exampleButtons"></div>
+                <p class="voice-info">※音声はブラウザの設定に依存します。日本語音声が利用可能か確認してください。</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Japanese Letters Learner</p>
+        <p><a href="mailto:mementomorikatsu@gmail.com">Contact</a></p>
+    </footer>
+
+    <!-- Install button -->
+    <button id="installBtn" class="install-btn">Install App</button>
+
+    <script>
+        // Kana data
+        const hiragana = {
+            a: ['あ', 'い', 'う', 'え', 'お'],
+            ka: ['か', 'き', 'く', 'け', 'こ'],
+            ga: ['が', 'ぎ', 'ぐ', 'げ', 'ご'],
+            sa: ['さ', 'し', 'す', 'せ', 'そ'],
+            za: ['ざ', 'じ', 'ず', 'ぜ', 'ぞ'],
+            ta: ['た', 'ち', 'つ', 'て', 'と'],
+            da: ['だ', 'ぢ', 'づ', 'で', 'ど'],
+            na: ['な', 'に', 'ぬ', 'ね', 'の'],
+            ha: ['は', 'ひ', 'ふ', 'へ', 'ほ'],
+            ba: ['ば', 'び', 'ぶ', 'べ', 'ぼ'],
+            pa: ['ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'],
+            ma: ['ま', 'み', 'む', 'め', 'も'],
+            ya: ['や', '', 'ゆ', '', 'よ'],
+            ra: ['ら', 'り', 'る', 'れ', 'ろ'],
+            wa: ['わ', '', 'を', '', 'ん']
+        };
+
+        const katakana = {
+            a: ['ア', 'イ', 'ウ', 'エ', 'オ'],
+            ka: ['カ', 'キ', 'ク', 'ケ', 'コ'],
+            ga: ['ガ', 'ギ', 'グ', 'ゲ', 'ゴ'],
+            sa: ['サ', 'シ', 'ス', 'セ', 'ソ'],
+            za: ['ザ', 'ジ', 'ズ', 'ゼ', 'ゾ'],
+            ta: ['タ', 'チ', 'ツ', 'テ', 'ト'],
+            da: ['ダ', 'ヂ', 'ヅ', 'デ', 'ド'],
+            na: ['ナ', 'ニ', 'ヌ', 'ネ', 'ノ'],
+            ha: ['ハ', 'ヒ', 'フ', 'ヘ', 'ホ'],
+            ba: ['バ', 'ビ', 'ブ', 'ベ', 'ボ'],
+            pa: ['パ', 'ピ', 'プ', 'ペ', 'ポ'],
+            ma: ['マ', 'ミ', 'ム', 'メ', 'モ'],
+            ya: ['ヤ', '', 'ユ', '', 'ヨ'],
+            ra: ['ラ', 'リ', 'ル', 'レ', 'ロ'],
+            wa: ['ワ', '', 'ヲ', '', 'ン']
+        };
+
+        const romaji = {
+            a: ['a', 'i', 'u', 'e', 'o'],
+            ka: ['ka', 'ki', 'ku', 'ke', 'ko'],
+            ga: ['ga', 'gi', 'gu', 'ge', 'go'],
+            sa: ['sa', 'shi', 'su', 'se', 'so'],
+            za: ['za', 'ji', 'zu', 'ze', 'zo'],
+            ta: ['ta', 'chi', 'tsu', 'te', 'to'],
+            da: ['da', 'ji', 'zu', 'de', 'do'],
+            na: ['na', 'ni', 'nu', 'ne', 'no'],
+            ha: ['ha', 'hi', 'fu', 'he', 'ho'],
+            ba: ['ba', 'bi', 'bu', 'be', 'bo'],
+            pa: ['pa', 'pi', 'pu', 'pe', 'po'],
+            ma: ['ma', 'mi', 'mu', 'me', 'mo'],
+            ya: ['ya', '', 'yu', '', 'yo'],
+            ra: ['ra', 'ri', 'ru', 're', 'ro'],
+            wa: ['wa', '', 'wo', '', 'n']
+        };
+
+        const examples = {
+            a: ['あお (青 - blue)', 'いえ (家 - house)', 'うえ (上 - up)', 'え (絵 - picture)', 'おおきい (大きい - big)'],
+            ka: ['かばん (鞄 - bag)', 'き (木 - tree)', 'くつ (靴 - shoes)', 'けしゴム (消しゴム - eraser)', 'こども (子供 - child)'],
+            ga: ['がっこう (学校 - school)', 'ぎんこう (銀行 - bank)', 'ぐんたい (軍隊 - army)', 'げんき (元気 - healthy)', 'ごはん (ご飯 - meal)'],
+            sa: ['さかな (魚 - fish)', 'しんぶん (新聞 - newspaper)', 'すし (寿司 - sushi)', 'せんせい (先生 - teacher)', 'そら (空 - sky)'],
+            za: ['ざっし (雑誌 - magazine)', 'じかん (時間 - time)', 'ずかん (図鑑 - picture book)', 'ぜんぶ (全部 - all)', 'ぞう (象 - elephant)'],
+            ta: ['たべもの (食べ物 - food)', 'ちち (父 - father)', 'つくえ (机 - desk)', 'て (手 - hand)', 'とけい (時計 - clock)'],
+            da: ['だいがく (大学 - university)', 'ぢしん (地震 - earthquake)', 'づか (塚 - mound)', 'でんわ (電話 - phone)', 'どうぶつ (動物 - animal)'],
+            na: ['なつ (夏 - summer)', 'にほん (日本 - Japan)', 'ぬりえ (塗り絵 - coloring)', 'ねこ (猫 - cat)', 'のうか (農家 - farmer)'],
+            ha: ['はな (花 - flower)', 'ひ (日 - day/sun)', 'ふね (船 - ship)', 'へや (部屋 - room)', 'ほん (本 - book)'],
+            ba: ['ばしょ (場所 - place)', 'びょういん (病院 - hospital)', 'ぶどう (葡萄 - grapes)', 'べんきょう (勉強 - study)', 'ぼうし (帽子 - hat)'],
+            pa: ['ぱん (パン - bread)', 'ぴあの (ピアノ - piano)', 'ぷりん (プリン - pudding)', 'ぺん (ペン - pen)', 'ぽけっと (ポケット - pocket)'],
+            ma: ['まど (窓 - window)', 'みず (水 - water)', 'むし (虫 - insect)', 'め (目 - eye)', 'もも (桃 - peach)'],
+            ya: ['やま (山 - mountain)', '', 'ゆき (雪 - snow)', '', 'よる (夜 - night)'],
+            ra: ['らくだ (ラクダ - camel)', 'りんご (林檎 - apple)', 'るす (留守 - absence)', 'れんしゅう (練習 - practice)', 'ろく (六 - six)'],
+            wa: ['わに (ワニ - crocodile)', '', 'を (particle)', '', 'ん (hiragana "n")']
+        };
+
+        // DOM elements
+        const darkModeBtn = document.getElementById('darkModeBtn');
+        const clearModeBtn = document.getElementById('clearModeBtn');
+        const hiraganaBtn = document.getElementById('hiraganaBtn');
+        const katakanaBtn = document.getElementById('katakanaBtn');
+        const mainMenu = document.getElementById('mainMenu');
+        const kanaDetail = document.getElementById('kanaDetail');
+        const backBtn = document.getElementById('backBtn');
+        const detailKanaRow = document.getElementById('detailKanaRow');
+        const exampleButtons = document.getElementById('exampleButtons');
+        const largeKanaDisplay = document.getElementById('largeKanaDisplay');
+        const largeRomajiDisplay = document.getElementById('largeRomajiDisplay');
+        const rowButtons = document.querySelectorAll('.row-btn');
+        const installBtn = document.getElementById('installBtn');
+
+        // Current mode
+        let isHiraganaMode = true;
+        let currentRow = '';
+        let isSpeaking = false;
+        let voicesReady = false;
+        let deferredPrompt;
+
+        // Initialize voices
+        function initializeVoices() {
+            return new Promise((resolve) => {
+                // Chrome needs this workaround
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    voicesReady = true;
+                    resolve();
+                    return;
+                }
+
+                speechSynthesis.onvoiceschanged = function() {
+                    voicesReady = true;
+                    resolve();
+                };
+            });
+        }
+
+        // Event listeners
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.remove('clear-mode');
+            darkModeBtn.classList.add('active');
+            clearModeBtn.classList.remove('active');
+        });
+
+        clearModeBtn.addEventListener('click', () => {
+            document.body.classList.add('clear-mode');
+            clearModeBtn.classList.add('active');
+            darkModeBtn.classList.remove('active');
+        });
+
+        hiraganaBtn.addEventListener('click', () => {
+            isHiraganaMode = true;
+            hiraganaBtn.classList.add('active');
+            katakanaBtn.classList.remove('active');
+            updateRowButtons();
+            if (currentRow) showKanaDetail(currentRow);
+        });
+
+        katakanaBtn.addEventListener('click', () => {
+            isHiraganaMode = false;
+            katakanaBtn.classList.add('active');
+            hiraganaBtn.classList.remove('active');
+            updateRowButtons();
+            if (currentRow) showKanaDetail(currentRow);
+        });
+
+        rowButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const row = button.getAttribute('data-row');
+                currentRow = row;
+                showKanaDetail(row);
+            });
+        });
+
+        backBtn.addEventListener('click', () => {
+            mainMenu.style.display = 'block';
+            kanaDetail.style.display = 'none';
+            speechSynthesis.cancel();
+            isSpeaking = false;
+        });
+
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+                installBtn.style.display = 'none';
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            
+            // Clear the deferredPrompt variable
+            deferredPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // Functions
+        function updateRowButtons() {
+            rowButtons.forEach(button => {
+                const row = button.getAttribute('data-row');
+                const romajiText = romaji[row][0];
+                const kanaSet = isHiraganaMode ? hiragana : katakana;
+                const firstKana = kanaSet[row][0];
+                
+                const content = `
+                    <span class="row-with-romaji">
+                        ${firstKana} <span class="romaji">${romajiText}</span>
+                    </span>
+                `;
+                button.innerHTML = content;
+            });
+        }
+
+        function showKanaDetail(row) {
+            mainMenu.style.display = 'none';
+            kanaDetail.style.display = 'flex';
+            detailKanaRow.innerHTML = '';
+            exampleButtons.innerHTML = '';
+            largeKanaDisplay.textContent = '';
+            largeRomajiDisplay.textContent = '';
+
+            const kanaSet = isHiraganaMode ? hiragana : katakana;
+            const currentRowKana = kanaSet[row];
+            const currentRomaji = romaji[row];
+            const currentExamples = examples[row];
+
+            currentRowKana.forEach((kana, index) => {
+                if (kana) {
+                    const button = document.createElement('button');
+                    button.className = 'kana-char';
+                    button.dataset.kana = kana;
+                    button.dataset.romaji = currentRomaji[index];
+                    
+                    const content = document.createElement('div');
+                    content.className = 'kana-with-romaji';
+                    content.innerHTML = `
+                        ${kana}
+                        <div class="romaji">${currentRomaji[index]}</div>
+                    `;
+                    
+                    button.appendChild(content);
+                    button.addEventListener('click', () => {
+                        largeKanaDisplay.textContent = kana;
+                        largeRomajiDisplay.textContent = currentRomaji[index];
+                        speak(kana);
+                    });
+                    detailKanaRow.appendChild(button);
+
+                    if (currentExamples[index]) {
+                        const exampleBtn = document.createElement('button');
+                        exampleBtn.textContent = currentExamples[index];
+                        exampleBtn.addEventListener('click', () => {
+                            const japaneseText = currentExamples[index].split(' (')[0];
+                            speak(japaneseText);
+                        });
+                        exampleButtons.appendChild(exampleBtn);
+                    }
+                }
+            });
+
+            if (currentRowKana[0]) {
+                largeKanaDisplay.textContent = currentRowKana[0];
+                largeRomajiDisplay.textContent = currentRomaji[0];
+            }
+        }
+
+        function speak(text) {
+            if (!voicesReady) {
+                console.warn('Voices not ready yet');
+                return;
+            }
+
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance();
+            utterance.text = text;
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.9;
+            
+            const voices = speechSynthesis.getVoices();
+            const japaneseVoice = voices.find(voice => 
+                voice.lang === 'ja-JP' || 
+                voice.lang === 'ja' || 
+                voice.name.includes('Japanese')
+            );
+            
+            if (japaneseVoice) {
+                utterance.voice = japaneseVoice;
+            } else if (voices.length > 0) {
+                // Fallback to any available voice if Japanese not found
+                utterance.voice = voices[0];
+            } else {
+                console.warn('No voices available');
+                return;
+            }
+            
+            utterance.onend = function() {
+                isSpeaking = false;
+            };
+            
+            isSpeaking = true;
+            speechSynthesis.speak(utterance);
+        }
+
+        // Register Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Initial setup
+        initializeVoices().then(() => {
+            updateRowButtons();
+        });
+
+        // Fallback in case voiceschanged doesn't fire
+        setTimeout(() => {
+            if (!voicesReady && speechSynthesis.getVoices().length > 0) {
+                voicesReady = true;
+            }
+        }, 1000);
+
+        // Check if app is running in standalone mode
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('Running in standalone mode');
+        }
+    </script>
+</body>
+</html>
