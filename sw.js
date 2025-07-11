@@ -11,6 +11,7 @@ const ASSETS_TO_CACHE = [
   '/IMG_20250710_183738_(192_x_192_ピクセル).png',
   '/icons/icon-384x384.png',
   '/icons/icon-512x512.png',
+  '/IMG_20250710_183648_(512_x_512_ピクセル).png',
   '/icons/favicon.ico',
   '/icons/apple-touch-icon.png',
   '/icons/safari-pinned-tab.svg'
